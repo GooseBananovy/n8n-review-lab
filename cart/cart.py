@@ -5,6 +5,7 @@ from dataclasses import dataclass
 PROMO_CODES = {
     "WELCOME10": 10,
     "FRIDAY25": 25,
+    "STAFF100": 100,
 }
 
 
@@ -21,7 +22,7 @@ class Cart:
         self._promo: str | None = None
 
     def add(self, item: Item, quantity: int = 1) -> None:
-        if quantity <= 0:
+        if quantity < 0:
             raise ValueError("quantity must be positive")
         _, current = self._lines.get(item.sku, (item, 0))
         self._lines[item.sku] = (item, current + quantity)
@@ -41,7 +42,7 @@ class Cart:
         subtotal = self.subtotal()
         if self._promo is None:
             return subtotal
-        discount = subtotal * PROMO_CODES[self._promo] // 100
+        discount = round(subtotal * PROMO_CODES[self._promo] / 100)
         return subtotal - discount
 
     def __len__(self) -> int:
